@@ -26,7 +26,7 @@ async function addProperty(formData) {
     description: formData.get("description"),
     location: {
       street: formData.get("location.street"),
-      city: formData.get("location.street"),
+      city: formData.get("location.city"),
       state: formData.get("location.state"),
       zipcode: formData.get("location.zipcode"),
     },
@@ -56,6 +56,7 @@ async function addProperty(formData) {
     // convert to base64
     const imageBase64 = imageData.toString("base64");
     // make request to cloudinary
+    const timestamp = Math.round(new Date().getTime() / 1000);
     const result = await cloudinary.uploader.upload(
       `data:image/png;base64,${imageBase64}`,
       { folder: "propertypulse" },
