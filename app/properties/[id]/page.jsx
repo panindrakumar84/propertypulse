@@ -15,7 +15,11 @@ const PropertyPage = async ({ params }) => {
   await connectDB();
   const { id } = await params;
   const propertyDoc = await Property.findOne({ _id: id }).lean();
-  const { userId } = await getSessionUser();
+
+  const sessionUser = await getSessionUser();
+  console.log("session user: ", sessionUser);
+
+  const userId = sessionUser?.userId;
 
   const property = convertToSerializableObject(propertyDoc);
 
@@ -46,13 +50,16 @@ const PropertyPage = async ({ params }) => {
             className={`grid grid-cols-1 ${!isUserProperty ? "md:grid-cols-70/30" : "max-w-4xl mx-auto"} w-full gap-6`}
           >
             <PropertyDetails property={property} />
-            {!isUserProperty && (
-              <aside className="space-y-4">
-                <BookmarkButton property={property} />
-                <ShareButtons property={property} />
-                <PropertyContactForm property={property} />
-              </aside>
-            )}
+
+            <aside className="space-y-4">
+              <ShareButtons property={property} />
+              {userId && !isUserProperty && (
+                <>
+                  <BookmarkButton property={property} />
+                  <PropertyContactForm property={property} />
+                </>
+              )}
+            </aside>
           </div>
         </div>
       </section>
